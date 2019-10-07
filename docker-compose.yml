@@ -1,0 +1,59 @@
+version: "3"
+
+services:
+  namenode:
+    build: ./namenode
+    image: hadoop-namenode
+    container_name: hive_docker_namenode
+    ports:
+      - "8020:8020"
+    environment:
+      - CLUSTER_NAME=test
+    env_file:
+      - ./hadoop.env
+
+  datanode:
+    build: ./datanode
+    image: hadoop-datanode
+    container_name: hive_docker_datanode
+    environment:
+      SERVICE_PRECONDITION: "namenode:50070"
+    env_file:
+      - ./hadoop.env
+
+  hive-server:
+    build: ./hive
+    image: hive:latest
+    container_name: hive_server
+    env_file:
+      - ./hadoop.env
+    volumes:
+      - parquet_data:/parquet_data
+    environment:
+      SERVICE_PRECONDITION: "hive-metastore:9083"
+    ports:
+      - "10000:10000"
+
+  hive-metastore:
+    build: ./hive
+    image: hive
+    env_file:
+      - ./hadoop.env
+    command: /opt/hive/bin/hive --service metastore
+    environment:
+      SERVICE_PRECONDITION: "namenode:50070 datanode:50075 hive-metastore-postgresql:5432"
+
+  hive-metastore-postgresql:
+    build: ./postgres_metastore
+    image: hive-metastore-postgresql
+
+  test-executor:
+    build: ./test_executor
+    image: test-executor
+    environment:
+      SERVICE_PRECONDITION: "hive-server:10000"
+    volumes:
+      - parquet_data:/parquet_data
+
+volumes:
+  parquet_data:

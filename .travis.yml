@@ -1,0 +1,11 @@
+language: minimal
+services:
+  - docker
+
+before_install:
+  - ./before_install.sh
+
+script:
+  - docker-compose up --build -d
+  # Check that `test-executor` returns the expected output
+  - if [ -z "$(docker-compose logs -f test-executor | grep "Test completed for the following data types")" ]; then exit 1; fi
