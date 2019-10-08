@@ -1,18 +1,22 @@
 #!/usr/bin/env python
 
-import storefact
+import os
 from functools import partial
 from tempfile import TemporaryDirectory
-import numpy as np
+
 import pandas as pd
+import pandas.testing as pdt
+import storefact
 from kartothek.io.eager import store_dataframes_as_dataset
+from kartothek.serialization.testing import get_dataframe_not_nested
+from pyhive import hive
+
 
 VOLUME_LOCATION = "/parquet_data"
 
 # Create dataset on local filesystem
 tmpdir = TemporaryDirectory().name
 store_factory = partial(storefact.get_store_from_url, f"hfs://{VOLUME_LOCATION}")
-from kartothek.serialization.testing import get_dataframe_not_nested
 
 df = get_dataframe_not_nested(100)
 # Rename because `date` and `null` are reserved in Hive QL
@@ -27,21 +31,19 @@ print(f"Dataset location: {VOLUME_LOCATION}")
 
 
 # Use Pyhive to query hive
-from pyhive import hive
-
 conn = hive.Connection(host="hive-server", port=10000)
 cursor = conn.cursor()
 TABLE_NAME = "ktk"
-import os
 
+# TODO: test partitioned dataset
 for filepath in store.iter_keys():
     if filepath.endswith(".parquet"):
         parquet_file_parentdir = f"{VOLUME_LOCATION}/{os.path.dirname(filepath)}"
 
 # Create Hive table
-cursor.execute(f"DROP TABLE {TABLE_NAME}")  # TODO: remove
-# Non-nested columns not included: `np.uint64` (max value is too large for `BIGINT`)
-# The `null` column can be specified as multiple types (at least `STRING` and `FLOAT`)
+## Non-nested columns not included: `np.uint64` (max value is too large for `BIGINT`)
+## The `null` column can be specified as multiple types (at least `STRING` and `FLOAT`)
+# TODO: have a mapping from kartothek/arrow dtypes to Hive dtypes
 selected_columns_and_dtypes = """\
             bool BOOLEAN,
             bytes BINARY,
@@ -58,7 +60,7 @@ selected_columns_and_dtypes = """\
             uint32 BIGINT,
             unicode STRING,
             null_ FLOAT"""
-# We can select the columns we want to load from the Parquet file, not all need to be specified
+# Hive allows us to only select a subset of columns to be loaded from the Parquet file
 cursor.execute(
     f"""
   CREATE external table {TABLE_NAME} (
@@ -74,16 +76,13 @@ selected_columns = [
 
 hive_df = pd.read_sql(f"SELECT * FROM {TABLE_NAME}", conn)
 hive_df.columns = selected_columns
-hive_df["datetime64"] = pd.to_datetime(
-    hive_df.loc[:, "datetime64"] * 1000, unit="ns"
-)  # Loaded timestamp is in microseconds
+# Pyarrow stores timestamp as microseconds from epoch, convert to date
+hive_df["datetime64"] = pd.to_datetime(hive_df.loc[:, "datetime64"] * 1000, unit="ns")
+# Output from hive is a string, parse this to date
 hive_df["date_"] = pd.to_datetime(hive_df.loc[:, "date_"], format="%Y-%m-%d").apply(
     lambda x: x.date()
-)  # Output from hive is a string
+)
 
-import pandas.testing as pdt
-
-pdt.assert_frame_equal(
-    df[selected_columns], hive_df, check_dtype=False
-)  # Ignore dtype for numeric comparisons
+# Ignore dtype for numeric comparisons (e.g. int32 with int64)
+pdt.assert_frame_equal(df[selected_columns], hive_df, check_dtype=False)
 print(f"Test completed for the following data types: {selected_columns}")

@@ -14,8 +14,7 @@ RUN curl -O https://dist.apache.org/repos/dist/release/hadoop/common/KEYS
 
 RUN gpg --import KEYS
 
-#ENV HADOOP_VERSION 3.2.1
-ENV HADOOP_VERSION 2.7.4
+ARG HADOOP_VERSION=2.7.4
 ENV HADOOP_URL https://archive.apache.org/dist/hadoop/core/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz
 
 RUN set -x \
