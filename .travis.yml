@@ -6,9 +6,10 @@ before_install:
   - ./before_install.sh
 
 script:
-  - docker-compose up --build &
+  - docker-compose up --build -d
   # Check that `test-executor` returns the expected output
   # `tee /dev/stderr` copies stdout to stderr to show output of command
+  - docker-compose logs -f &
   - if [ -z "$(
         docker-compose logs -f test-executor |
         tee /dev/stderr |
