@@ -6,11 +6,11 @@ ARG HIVE_VERSION
 # https://docs.docker.com/engine/reference/builder/#using-arg-variables
 # https://docs.docker.com/engine/reference/builder/#environment-replacement
 ENV HIVE_VERSION=${HIVE_VERSION:-2.3.2}
-
 ENV HIVE_HOME /opt/hive
 ENV PATH $HIVE_HOME/bin:$PATH
 ENV HADOOP_HOME /opt/hadoop-$HADOOP_VERSION
 
+#Set the working directory for HIVE
 WORKDIR /opt
 
 #Install Hive and PostgreSQL JDBC
@@ -23,10 +23,6 @@ RUN apt-get update && apt-get install -y wget procps && \
 	apt-get --purge remove -y wget && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
-
-
-#Spark should be compiled with Hive to be able to use it
-#hive-site.xml should be copied to $SPARK_HOME/conf folder
 
 #Custom configuration goes here
 ADD conf/hive-site.xml $HIVE_HOME/conf
