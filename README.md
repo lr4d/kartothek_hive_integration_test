@@ -5,6 +5,9 @@ The main intention of this test is to ensure that datasets created by kartothek 
 
 This docker-compose setup creates a kartothek dataset with a number of different data types and uses Hive to read the generated Parquet files.
 
+Note: When forking the repo, to run the tests on a periodic basis you will need to setup a cron job in travis. See:
+https://docs.travis-ci.com/user/cron-jobs/#adding-cron-jobs for instructions on how to do this.
+
 ## Compatibility issues
  - Timestamps: Arrow stores timestamps in Parquet files as microseconds from epoch. This is not supported by Hive's `DATETIME`. Therefore we import the datetime column from our Parquet file with the data type `BIGINT`.
  - Unsigned integers are not supported by Hive. This is not a major issue as they can be imported as signed integers. However, since the maximum value of `np.uint64` exceeds the byte-length of `BIGINT` (64-byte signed integer), it cannot be reliably loaded.
