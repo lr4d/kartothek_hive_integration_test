@@ -27,6 +27,7 @@ Currently the validation is done for the following data types: `'bool', 'bytes',
  - Read a kartothek dataset from Hive which consists of more than a single file.
  - Use a partitioned kartothek dataset.
  - Test using the latest stable version of Hive.
+ - Full integration with standard kartothek tests.  At the moment of writing the tests take around 45 seconds, excluding the docker image build. The image build could be cached, and this test could be added as a job to the default kartothek testing build.
  - (?) Test reading from Presto.
  - (?) Test reading from Drill.
  - (?) Convert a Hive dataset to a kartothek dataset.
