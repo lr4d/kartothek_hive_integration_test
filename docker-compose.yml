@@ -2,7 +2,9 @@ version: "3"
 
 services:
   namenode:
-    build: ./namenode
+    build:
+      context: docker
+      dockerfile: namenode/Dockerfile
     image: hadoop-namenode
     container_name: hive_docker_namenode
     ports:
@@ -10,23 +12,27 @@ services:
     environment:
       - CLUSTER_NAME=test
     env_file:
-      - ./hadoop.env
+      - docker/hadoop.env
 
   datanode:
-    build: ./datanode
+    build:
+      context: docker
+      dockerfile: datanode/Dockerfile
     image: hadoop-datanode
     container_name: hive_docker_datanode
     environment:
       SERVICE_PRECONDITION: "namenode:50070"
     env_file:
-      - ./hadoop.env
+      - docker/hadoop.env
 
   hive-server:
-    build: ./hive
+    build:
+      context: docker
+      dockerfile: hive/Dockerfile
     image: hive:latest
     container_name: hive_server
     env_file:
-      - ./hadoop.env
+      - docker/hadoop.env
     volumes:
       - parquet_data:/parquet_data
     environment:
@@ -35,23 +41,30 @@ services:
       - "10000:10000"
 
   hive-metastore:
-    build: ./hive
+    build:
+      context: docker
+      dockerfile: hive/Dockerfile
     image: hive
     env_file:
-      - ./hadoop.env
+      - docker/hadoop.env
     command: /opt/hive/bin/hive --service metastore
     environment:
       SERVICE_PRECONDITION: "namenode:50070 datanode:50075 hive-metastore-postgresql:5432"
 
   hive-metastore-postgresql:
-    build: ./postgres_metastore
+    build:
+      context: docker
+      dockerfile: postgres_metastore/Dockerfile
     image: hive-metastore-postgresql
 
   test-executor:
-    build: ./test_executor
+    build:
+      context: docker
+      dockerfile: test_executor/Dockerfile
     image: test-executor
     environment:
       SERVICE_PRECONDITION: "hive-server:10000"
+      FOR_CI: "${FOR_CI}"
     volumes:
       - parquet_data:/parquet_data
 

@@ -45,8 +45,9 @@ ENV PATH $HADOOP_PREFIX/bin/:$PATH
 #mapred-site.xml should be copied to /etc/hadoop/ folder
 RUN cp /etc/hadoop/mapred-site.xml.template /etc/hadoop/mapred-site.xml
 
-ADD entrypoint.sh /entrypoint.sh
+COPY common.sh /common.sh
 
+COPY hadoop/entrypoint.sh /entrypoint.sh
 RUN chmod a+x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]

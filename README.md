@@ -35,21 +35,11 @@ Currently the validation is done for the following data types: `'bool', 'bytes',
 `(?)` indicates potential to-do's, which should be regarded as low priority.
 
 ## Development
-In order to spin up the docker-compose cluster, build the images using the `before_install.sh` script and then execute:
+In order to spin up the docker-compose cluster, 
 
-    docker-compose up -d
+- Build the images locally (if required) using: `make build_all` 
+- Then bring up all required services using: `make run`
 
-This initializes the necessary hadoop services such as a namenode, datanode, hive server, hive metastore; along with the service that will execute the test (`test-executor`).
+If you want to test code interactively execute code from the `test-executor` service with the following commands:
 
-Use the script `utils/restart.sh` to restart the docker-compose cluster.
-
-If you want to test code interactively, add the line `command: sleep 365d` in `docker-compose.yml` under `test-executor` (this will make the service not execute the default `startup.py` script, and instead remain idle).
-Then, restart the cluster (`utils/restart.sh`) and execute code from the `test-executor` service with the following commands:
-
-    docker-compose exec test-executor bash  # Open a shell inside `test-executor`
-    python  # Open a Python interpreter
-
-    
-
-
-
+    docker-compose exec test-executor python  # Open a shell inside `test-executor`
