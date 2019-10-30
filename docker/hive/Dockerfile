@@ -25,18 +25,20 @@ RUN apt-get update && apt-get install -y wget procps && \
 	rm -rf /var/lib/apt/lists/*
 
 #Custom configuration goes here
-ADD conf/hive-site.xml $HIVE_HOME/conf
-ADD conf/beeline-log4j2.properties $HIVE_HOME/conf
-ADD conf/hive-env.sh $HIVE_HOME/conf
-ADD conf/hive-exec-log4j2.properties $HIVE_HOME/conf
-ADD conf/hive-log4j2.properties $HIVE_HOME/conf
-ADD conf/ivysettings.xml $HIVE_HOME/conf
-ADD conf/llap-daemon-log4j2.properties $HIVE_HOME/conf
+COPY hive/conf/hive-site.xml $HIVE_HOME/conf
+COPY hive/conf/beeline-log4j2.properties $HIVE_HOME/conf
+COPY hive/conf/hive-env.sh $HIVE_HOME/conf
+COPY hive/conf/hive-exec-log4j2.properties $HIVE_HOME/conf
+COPY hive/conf/hive-log4j2.properties $HIVE_HOME/conf
+COPY hive/conf/ivysettings.xml $HIVE_HOME/conf
+COPY hive/conf/llap-daemon-log4j2.properties $HIVE_HOME/conf
 
-COPY startup.sh /usr/local/bin/
+COPY hive/startup.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/startup.sh
 
-COPY entrypoint.sh /usr/local/bin/
+COPY common.sh /usr/local/bin/
+
+COPY hive/entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 EXPOSE 10000

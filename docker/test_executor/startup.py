@@ -91,7 +91,7 @@ def assert_hive_compat(df, store_factory, uuid, **kwargs):
 
     # Ignore dtype for numeric comparisons (e.g. int32 with int64)
     pdt.assert_frame_equal(df[selected_columns], hive_df, check_dtype=False)
-    print(f"Test completed for the following data types: {selected_columns}")
+    print(f"Test completed for the following data types: {[sc.rstrip('_') for sc in selected_columns]}")
 
 
 # Create dataset on local filesystem

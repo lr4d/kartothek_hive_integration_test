@@ -1,9 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# Set some sensible defaults
-export CORE_CONF_fs_defaultFS=${CORE_CONF_fs_defaultFS:-hdfs://`hostname -f`:8020}
-
-function addProperty() {
+function add_property() {
   local path=$1
   local name=$2
   local value=$3
@@ -20,19 +17,16 @@ function configure() {
 
     local var
     local value
-    
+
     echo "Configuring $module"
-    for c in `printenv | perl -sne 'print "$1 " if m/^${envPrefix}_(.+?)=.*/' -- -envPrefix=$envPrefix`; do 
-        name=`echo ${c} | perl -pe 's/___/-/g; s/__/_/g; s/_/./g'`
+    for c in `printenv | perl -sne 'print "$1 " if m/^${envPrefix}_(.+?)=.*/' -- -envPrefix=$envPrefix`; do
+        name=`echo ${c} | perl -pe 's/___/-/g; s/__/@/g; s/_/./g; s/@/_/g;'`
         var="${envPrefix}_${c}"
         value=${!var}
         echo " - Setting $name=$value"
-        addProperty $path $name "$value"
+        add_property /etc/hadoop/$module-site.xml $name "$value"
     done
 }
-
-configure /opt/hive/conf/hive-site.xml hive HIVE_SITE_CONF
-
 
 function wait_for_it()
 {
@@ -53,7 +47,7 @@ function wait_for_it()
         echo "[$i/$max_try] ${service}:${port} is still not available; giving up after ${max_try} tries. :/"
         exit 1
       fi
-      
+
       echo "[$i/$max_try] try in ${retry_seconds}s once again ..."
       let "i++"
       sleep $retry_seconds
@@ -63,10 +57,3 @@ function wait_for_it()
     done
     echo "[$i/$max_try] $service:${port} is available."
 }
-
-for i in ${SERVICE_PRECONDITION[@]}
-do
-    wait_for_it ${i}
-done
-
-exec $@
