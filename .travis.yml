@@ -6,7 +6,7 @@ before_install:
   - ./before_install.sh
 
 script:
-  - FOR_CI="True" docker-compose up -d
+  - RUN_ON_TRAVIS="True" docker-compose up -d
   # Check that `test-executor` returns the expected output
   # `tee /dev/stderr` copies stdout to stderr to show output of command
   - if [ -z "$(

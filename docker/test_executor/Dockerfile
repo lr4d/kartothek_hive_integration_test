@@ -17,7 +17,7 @@ RUN conda install -y pyhive
 # Show version information of packages
 RUN conda list
 
-ENV FOR_CI="True"
+ENV RUN_ON_TRAVIS="True"
 
 COPY test_executor/startup.py /usr/local/bin/
 RUN chmod +x /usr/local/bin/startup.py

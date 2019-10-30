@@ -4,4 +4,4 @@ build_containers:
 	docker-compose build
 build_all: build_base build_containers
 run:
-	FOR_CI="False" docker-compose up -d
+	RUN_ON_TRAVIS="False" docker-compose up -d

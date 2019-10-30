@@ -64,7 +64,7 @@ services:
     image: test-executor
     environment:
       SERVICE_PRECONDITION: "hive-server:10000"
-      FOR_CI: "${FOR_CI}"
+      RUN_ON_TRAVIS: "${RUN_ON_TRAVIS}"
     volumes:
       - parquet_data:/parquet_data
 

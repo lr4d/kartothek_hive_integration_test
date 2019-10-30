@@ -1,8 +1,8 @@
 #!/bin/bash
 
-echo "FOR_CI is: $FOR_CI"
+echo "RUN_ON_TRAVIS is: $RUN_ON_TRAVIS"
 
-if [ "$FOR_CI" = "True" ]; then
+if [ "$RUN_ON_TRAVIS" = "True" ]; then
     echo "Running hive compatibility test..."
     startup.py
 else
