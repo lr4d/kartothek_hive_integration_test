@@ -1,16 +1,20 @@
 language: minimal
 services:
-  - docker
-
+- docker
 before_install:
-  - ./before_install.sh
-
+- "./before_install.sh"
 script:
-  - RUN_ON_TRAVIS="True" docker-compose up -d
-  # Check that `test-executor` returns the expected output
-  # `tee /dev/stderr` copies stdout to stderr to show output of command
-  - if [ -z "$(
-        docker-compose logs -f test-executor |
-        tee /dev/stderr |
-        grep "Test completed for the following data types"
-    )" ]; then exit 1; fi
+- RUN_ON_TRAVIS="True" docker-compose up -d
+- if [ -z "$( docker-compose logs -f test-executor | tee /dev/stderr | grep "Test
+  completed for the following data types" )" ]; then exit 1; fi
+notifications:
+  email:
+    # Order: Lucas, Florian, Peter, Aravind, Krish
+    recipients:
+    - secure: mncipbV4bkfYaVLuiaU0uPpHJgSXbUU9cjvf8s9CvQOXgFfEAJVnO45H6f4PRdBqJgpWEi3kG60dMDHQ/7OQ10MUZXGkVP+t0xRyFDlcMp3jmW1iQ6oKEJ46+hrN4CjJF5CfRgIBr61Wt0bDYga80De2KtHTNbMJnYxfUE+GYz5fjJBuP62lQ77MHj9iRhu0+F4vceTy9MJjXFCZ77+gl63A9fYSc7y4Xw7HB8/T6V8Tm8LO6DYz+zHTqNC7IIisknbSgn63iktlfOozH5QvasNkOPCm/dAfwFu04mwOfh2QfQrc7r3jfxQv+1pwFkA0MmSaZdPphwytlPJV+wPCRvmO2whs1XzhDtRUuUbV2SqGqfmawbq/4jTSMFp9xST8IWJO3sPyWjcPAbZd68oYXuda1dhTKNg3ltDytawB1MuVlywtKt5/aUek8nOfDP8iHJxRUmSry8GsYYMTzOuoHXr4s6KslkmBThvv8u95mmLDx51/6auGxscpnmkwUVYN8JT9APtltvbxIfsMsqLWXGGlhtJf+6vJ8+Sta6VUFDbki+ZUBMgV/OnSuOJ3DkEjZtjFbPhrwpl/+KcyuND2wUWypVXab7jzZUCVCrN7kkz6wadUcoVUybOJXTRrnM0IqZFTXImUykby8miyOAl89w9sYYLMEmkYZ7eAunek1Hw=
+    - secure: C3LSVc6/HUj4qtvjZGxnslXr8kaJkjohUGbct5HnBxrcqVy3kln7pMoTRbmdEtfVB0GptWDnvA7mBKOJ2VRRNR/+G82PMbzR2uMCS4xJKNiNnKXFp3xRIVJ5vyMOmvGN+3byzhr3rTgs8FvW2AjLnM0P1wLzNora0I0QMULV1upHzXSYr6xB7rw8yXKEQKhmPsw7hHQzgMmaN3nUeVTBGUg1ohrgDZAytb/Ua23rSt/HNzSMupWQzcBgxAW6N8JzZcEqHimibajSf3oEqIfF5/Ia9vEHhFYspbsj6rG5NMCLlaUdYN26QvhWqyj0eGioD0ly8iEOeY84Y6Mk6t6znV7FO3xGGlYd6yP1Ir8aXwScCsuQj9U/n/g0Cxp59fzv++k9ZI9UGOrhtw2iuwB8/u4JytfUrq09bvnLKLV2fLBA/SfkEiozwjP3jpxaRubeJdzZjqzkro6boyQitnfQzxEVKiJwIgTdVridjPQSp0N8n0XU9Gw7mpP5YuRoP05fDUg5zwWRkE1zLkR6hwqgNz+eDDWbG5H6ksNG4HoetXD2DdWzLzJo4WBpF7CdXTC5DAuqqh46zzzmfUaHKpDUyOZHTk+bdtbeZ/qb9D1iLhVGs7BGnvGDWC1W9yhndPgGquySeK3P5WxirPvvEapRBqxTTwCCfrbaOZbsFOMr+8k=
+    - secure: dcW0avAGx5mS5CeIiv1MlDBAtvSRrTzsWEIF2YLVEKl5/qdF58Tocp1atsLXQxQ+gi/+aEN1qqDpRkxXmSIvjFg4SwPTIYE0dhiHaZdB0C8QiMlT+dstB0ekkhDgYdoMMPmg+Xypf3qxsUEjF2nyjuXjvTmImV6cIH5b2rTI5Z3Ypc+PAThK0l05zkBiJb02ZzhHNLR9+EV/3VgwApERRPPMqs2RNAYg6wbcB/QgRAS0nWxxSuPcxPqS7Nth0aqVWTTDDBzTzHVqM+NvMxQ4Ma4qYL+WsEI0upRY6iyWMVNiKuLs+GD/y7RTpORuYENa2naWFJCKPwxwb2/79ntmzJc4dk9smXFYZ1WlEIapGO8mQHg07olX3u8eYPdZca88WgGNtXUi3n/NGXH8sEWmtffFR/uPt4eJCUyAbpprRdbwqRWXGQ7g4UL65n2O8rTEAUpy5evDjXjHHCicgNWKL7BApuMd/vKw45nsmX3GKyR1yEBywpsVwqMmhVX2Ldxt+kwQyXgE4BdOMvvWBsEGQCX6TIQyOMGO5cPg6zAtZnArzA9Z9B0x6a//L7ddhi09aRPbJQot3hajzDC8TtvpBZWQ6KDZjp/4ZrPHfZJ2IZE3gFwC8fyAGtyu6o4GtTBjvd3nrZUb0a1xMNpsxwK3mtrLj6RDLioZygAoFUZoVbk=
+    - secure: X4odwekhU1okjxZUe/eKhIq8OKU04AztqB49h+4J9S5UjZaqIhUA4nBu8vBrFgrRGDM5L3wZkAwcv/Au7hiABTOfuEIFN5Qz7K7UCqCxuwcLd9a2AiZG6NLgptF1qn9CmHc0TrUE33JWUmdHzvxgiLCRN7oXFRxDuqYjcakpGYfDsdKLe6YF/jHo6/Ymh7w25IkM3dJQQWatjFh//wxzXixbQ2EJTOIwNabnXJN1hnwEn2LrrzLYaAZ2QnU0ZmqJp4ggA3tlpbIJdwREhxo1V9dRq7twaFGIePRq8FwPzILzehHHcaFgoVhjiPTB4U//L+6h2gLZJiD3dyGV6dT0wbZ23vhR2G5o7TbilNcGMdbjZEjSiexIUqscLevIn+1feUOGfduNysXIQ9gCWjIg1TdH/JYp78ek0fwFLF64pidUQHXu9cTIbMFv+moq+hMgLC0ITtDVd/a3GhT1VZqP8hXjz+QHKn9Z0o+mkSlCJz6fsu7n/UuIvXayEGQx3jBD23oARzDZOsNZbXRdi9On8pa/XsPOoSD9cMP4lWNDW5NSFaPXOTKKzJzq/OFo0ffodJbBRBVHfbiENUA+rHrkgfVU5sBaQrqam5JCgyaY1rxGJiQ6cSW14va5U71+ufou6LRulrcF8hhAzQJgkP6tFRYkFATc4pDBVh8qcTypMH4=
+    - secure: elWZJL6QG3O1l4DYN725giq7ghuqu4zr77wcyTJgMAvKUTeAQO0Mo5kv6m3xzEN9IMJhi1nTQeWCKC0qV0cooXkHBwHfuv7DGB6dVvDBB002rraGZtE9aH8Dbdn3EjkeLlS5lDc0TMR0mViZICmiU0dL850iqTgDWyQfDPFAU1wQ38jPtNr7qEC/QiBb71Z8whnQPHrpGRvGnw36X/gW6KwYXkKaW2iAaXS24RR6vN9aeRB6qiy6Dr22rO7YsxImyzdoqe2ocQJIgl9GpZ8ZTdK9b+zbAwJvziaXYKVbSP7991324lIw/Zx+IJyPqEaaw4yM+Zaz7vFCVvqYjw+rsz7kxkZ03lXL9STyRRe/EfLg+mO7kJE5mDkLMWU5vI+6RsbzU3WW+zb5QWTLyf7KFK8YIEXycLesVpyJcjQjiOk56Wpc1cNWcBUSjmXzuXKyx1nuH9TdX+wtZiN5+YN/1Elk3IO5tojfqnuCH/IWpkVOUVCPQtOs2zhE1G8gdBwk0Dme+LlEk3/skoBzcIA3n/MoBBKPf/vC8iMPfPyX7zWBhZe4Eu7Ar49FpzusUahLqWDwYfxMN+nDP4Z2IMauB2iyRt0grLzP0gsetRH74JQCQCYhE/L4EqDZESi5XcDpBVaCnJd3hgCnMvDI5diBIqyy2Mq74q3OJx8eF/zCsbM=
+    on_success: change
+    on_failure: always
