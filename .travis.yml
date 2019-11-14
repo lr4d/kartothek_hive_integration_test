@@ -4,9 +4,14 @@ services:
 before_install:
 - "./before_install.sh"
 script:
-- RUN_ON_TRAVIS="True" docker-compose up -d
-- if [ -z "$( docker-compose logs -f test-executor | tee /dev/stderr | grep "Test
-  completed for the following data types" )" ]; then exit 1; fi
+  - RUN_ON_TRAVIS="True" docker-compose up -d
+  # Check that `test-executor` returns the expected output
+  # `tee /dev/stderr` copies stdout to stderr to show output of command
+  - if [ -z "$(
+        docker-compose logs -f test-executor |
+        tee /dev/stderr |
+        grep "Test completed successfully"
+    )" ]; then exit 1; fi
 notifications:
   email:
     # Order: Lucas, Florian, Peter, Aravind, Krish

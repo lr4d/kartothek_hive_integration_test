@@ -10,7 +10,7 @@ RUN apt-get update && \
 ARG PYTHON_VERSION=3.7
 
 RUN conda install -y python=${PYTHON_VERSION}
-RUN pip install git+https://github.com/JDASoftwareGroup/kartothek@master
+RUN pip install git+https://github.com/JDASoftwareGroup/kartothek@master pytest
 # `pyhive` is installed after the pip install to prevent pip from changing pyhive
 # dependencies
 RUN conda install -y pyhive
@@ -19,8 +19,7 @@ RUN conda list
 
 ENV RUN_ON_TRAVIS="True"
 
-COPY test_executor/startup.py /usr/local/bin/
-RUN chmod +x /usr/local/bin/startup.py
+COPY test_executor/test_hive_compatibility.py test_hive_compatibility.py
 
 COPY common.sh /usr/local/bin/
 
@@ -32,4 +31,3 @@ RUN chmod +x /usr/local/bin/ci_or_local.sh
 
 ENTRYPOINT ["entrypoint.sh"]
 CMD ci_or_local.sh
-#CMD startup.py
