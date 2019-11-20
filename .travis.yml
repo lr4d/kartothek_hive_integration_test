@@ -2,7 +2,7 @@ language: minimal
 services:
 - docker
 before_install:
-- "./before_install.sh"
+- travis_retry ./before_install.sh
 script:
   - RUN_ON_TRAVIS="True" docker-compose up -d
   # Check that `test-executor` returns the expected output
