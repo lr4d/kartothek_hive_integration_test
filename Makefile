@@ -4,4 +4,4 @@ build_containers:
 	docker-compose build
 build: build_base build_containers
 run:
-	RUN_ON_TRAVIS="False" docker-compose up -d
+	DEBUG="True" docker-compose up -d
